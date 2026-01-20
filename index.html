@@ -3,168 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alto Contraste Pro - Centro Perceptum</title>
+    <title>Estimulación Visual Pro - Centro Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; background: #000; color: #fff; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
-        
-        /* UI SUPERIOR */
-        #game-ui { 
-            position: fixed; top: 0; width: 100%; background: rgba(255,255,255,0.1); 
-            padding: 15px; display: none; justify-content: space-around; align-items: center; z-index: 10; 
-        }
-        #timer-bar-container { width: 40%; height: 10px; background: #333; border-radius: 5px; overflow: hidden; }
-        #timer-bar { width: 100%; height: 100%; background: #fff; transition: width 0.1s linear; }
 
-        /* OBJETIVO: Figura Blanca sobre Negro */
-        #target { 
-            position: absolute; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            background: transparent; user-select: none; color: #fff;
-        }
-
-        /* PANTALLAS */
-        #start-screen, #end-screen {
-            position: fixed; inset: 0; background: #000; z-index: 100;
+        /* PANTALLA INICIAL */
+        #start-screen {
+            position: fixed; inset: 0; z-index: 100;
+            background: linear-gradient(135deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; border: 15px solid #fff; padding: 20px;
+            text-align: center; padding: 20px;
+        }
+        .welcome-box {
+            background: white; color: #333; padding: 40px; border-radius: 50px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2); max-width: 550px;
+        }
+        .btn-play {
+            background: #4CAF50; color: white; border: none; padding: 20px 50px;
+            font-size: 1.8rem; font-weight: 900; border-radius: 50px; cursor: pointer;
+            margin-top: 20px;
         }
 
-        .instructions-box { 
-            border: 2px solid #fff; padding: 25px; margin: 20px; max-width: 600px; text-align: left; 
-        }
-
-        .btn { background: #fff; color: #000; border: none; padding: 20px 50px; font-weight: 900; font-size: 1.5rem; cursor: pointer; margin-top: 20px; text-transform: uppercase; }
+        /* JUEGO */
+        #game-area { display: none; width: 100vw; height: 100vh; position: relative; background: #000; }
         
-        .recommendation { background: #fff; color: #000; padding: 25px; margin-top: 20px; font-size: 1.1rem; max-width: 80% }
+        /* Fondo táctil para detectar errores */
+        #miss-detector { position: absolute; inset: 0; z-index: 1; }
+
+        #target { 
+            position: absolute; cursor: pointer; color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 5; line-height: 1;
+        }
+
+        /* BOTÓN SIGUIENTE */
+        #next-btn {
+            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
+            background: #fff; color: #000; border: none; padding: 25px 50px;
+            font-size: 1.6rem; font-weight: 900; border-radius: 60px;
+            cursor: pointer; display: none; z-index: 10; box-shadow: 0 0 30px rgba(255,255,255,0.4);
+        }
+
+        /* INFO SUPERIOR */
+        .ui-top {
+            position: fixed; top: 0; width: 100%; padding: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 10; pointer-events: none;
+        }
+        #lives-display { font-size: 2rem; pointer-events: auto; }
+        .lvl-tag { background: rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 20px; font-weight: 900; }
+
+        /* PANTALLA FINAL */
+        #end-screen {
+            position: fixed; inset: 0; background: #fff; color: #000; z-index: 110;
+            display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px;
+        }
     </style>
 </head>
 <body>
 
 <div id="start-screen">
-    <h1 style="font-size: 3rem; margin: 0;">CENTRO PERCEPTUM</h1>
-    <div class="instructions-box">
-        <h2 style="margin-top:0;">ALTO CONTRASTE PEDIÁTRICO</h2>
-        <p><strong>Habilidades:</strong> Fijación, Agudeza visual básica y Atención focalizada.</p>
-        <p><strong>Instrucción:</strong> Toca las figuras blancas que aparecen. El tamaño irá disminuyendo progresivamente para trabajar la agudeza del estímulo.</p>
-        <p><strong>Modo:</strong> Infinito (3 vidas)</p>
+    <div class="welcome-box">
+        <h1 style="font-size: 3rem; margin: 0;">¡Hola! ✨</h1>
+        <p style="font-size: 1.4rem;">Toca las figuras blancas. ¡Ten cuidado de no tocar el fondo!</p>
+        <button class="btn-play" onclick="startGame()">¡EMPEZAR! 🚀</button>
     </div>
-    <button class="btn" onclick="startGame()">¡EMPEZAR!</button>
 </div>
 
-<div id="game-ui">
-    <div>NIVEL: <span id="lvl">1</span></div>
-    <div id="timer-bar-container"><div id="timer-bar"></div></div>
-    <div id="lives-container">❤️❤️❤️</div>
+<div id="game-area">
+    <div id="miss-detector" onclick="onMiss()"></div>
+    <div class="ui-top">
+        <div class="lvl-tag">NIVEL <span id="lvl-num">1</span></div>
+        <div id="lives-display">❤️❤️❤️</div>
+    </div>
+    <div id="target" onclick="onHit(event)"></div>
+    <button id="next-btn" onclick="nextLevel()">SIGUIENTE RETO ➔</button>
 </div>
 
-<div id="target" style="display:none;" onclick="hit()"></div>
-
-<div id="end-screen" style="display:none;">
-    <h1>SESIÓN FINALIZADA</h1>
-    <div class="recommendation" id="resumen">Enviando resultados al historial clínico...</div>
-    <button class="btn" onclick="location.reload()">NUEVA SESIÓN</button>
+<div id="end-screen">
+    <h1 style="font-size: 3rem;">Juego Terminado</h1>
+    <p id="final-stats" style="font-size: 1.5rem;"></p>
+    <button class="btn-play" onclick="location.reload()" style="background:#2196F3">VOLVER A EMPEZAR</button>
 </div>
 
 <script>
-    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzZca1mPz6VPxF9fjyL4kWNup_TR9ULFXQCkB1a6BtxZRf3HgVjAjOsmQz2QnGMtPMAw/exec";
-
-    let lives = 3;
     let level = 1;
-    let hits = 0;
-    let baseSize = 350; // Empezamos mucho más grande
-    let timerInterval;
-    let timeLeft;
-    const icons = ['★', '●', '■', '▲', '✦', '✖'];
+    let lives = 3;
+    let baseSize = 400;
+    const shapes = ['★', '●', '■', '▲', '♥', '✖', '✦'];
 
     function startGame() {
         document.getElementById('start-screen').style.display = 'none';
-        document.getElementById('game-ui').style.display = 'flex';
+        document.getElementById('game-area').style.display = 'block';
         spawn();
     }
 
     function spawn() {
-        clearInterval(timerInterval);
         const target = document.getElementById('target');
-        target.style.display = 'flex';
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.style.display = 'none';
         
-        // El tamaño se reduce 25px por cada nivel
-        let currentSize = Math.max(40, baseSize - (level * 25));
+        let currentSize = Math.max(50, baseSize - (level * 30));
         target.style.width = currentSize + 'px';
         target.style.height = currentSize + 'px';
-        target.style.fontSize = (currentSize * 0.9) + 'px'; // La figura ocupa casi todo el espacio
-        target.innerHTML = icons[Math.floor(Math.random()*icons.length)];
+        target.style.fontSize = (currentSize * 0.85) + 'px';
+        target.innerHTML = shapes[Math.floor(Math.random() * shapes.length)];
 
-        // Posición aleatoria
         const maxX = window.innerWidth - currentSize;
-        const maxY = window.innerHeight - currentSize - 120;
+        const maxY = window.innerHeight - currentSize - 180;
         target.style.left = Math.random() * maxX + 'px';
         target.style.top = (Math.random() * maxY + 100) + 'px';
-
-        startTimer();
+        target.style.display = 'flex';
     }
 
-    function startTimer() {
-        let duration = Math.max(700, 4000 - (level * 200)); // Empieza con 4 seg, baja por nivel
-        timeLeft = 100;
-        const bar = document.getElementById('timer-bar');
+    function onHit(event) {
+        event.stopPropagation(); // Evita que el toque llegue al fondo (miss-detector)
+        document.getElementById('target').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'block';
         
-        const step = 100 / (duration / 50);
-        timerInterval = setInterval(() => {
-            timeLeft -= step;
-            bar.style.width = timeLeft + "%";
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                miss();
-            }
-        }, 50);
+        // Vida extra cada 5 niveles (máximo 3)
+        if (level % 5 === 0 && lives < 3) {
+            lives++;
+            updateLivesUI();
+        }
     }
 
-    function hit() {
-        hits++;
-        if (hits % 5 === 0) {
-            level++;
-            document.getElementById('lvl').innerText = level;
+    function onMiss() {
+        lives--;
+        updateLivesUI();
+        
+        // Efecto visual de error (flash rojo rápido)
+        document.body.style.backgroundColor = "#400";
+        setTimeout(() => { document.body.style.backgroundColor = "#000"; }, 100);
+
+        if (lives <= 0) {
+            endGame();
         }
+    }
+
+    function updateLivesUI() {
+        document.getElementById('lives-display').innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+    }
+
+    function nextLevel() {
+        level++;
+        document.getElementById('lvl-num').innerText = level;
         spawn();
     }
 
-    function miss() {
-        lives--;
-        updateLives();
-        if (lives <= 0) endGame();
-        else spawn();
-    }
-
-    function updateLives() {
-        document.getElementById('lives-container').innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
-    }
-
     function endGame() {
-        clearInterval(timerInterval);
-        document.getElementById('target').style.display = 'none';
+        document.getElementById('game-area').style.display = 'none';
         document.getElementById('end-screen').style.display = 'flex';
+        document.getElementById('final-stats').innerText = `Llegaste al Nivel ${level}`;
         
-        let rec = "";
-        if (level > 10) rec = "Excelente agudeza dinámica y fijación. Logra detectar estímulos mínimos.";
-        else if (level > 5) rec = "Progreso adecuado. Se recomienda continuar para estabilizar fijación en tamaños pequeños.";
-        else rec = "Se observa fatiga o baja atención visual. Fortalecer fijación con estímulos de gran tamaño.";
-
-        document.getElementById('resumen').innerText = rec;
-
-        fetch(WEBAPP_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify({
-                paciente: localStorage.getItem('paciente') || "Anónimo",
-                juego: "Alto Contraste Infinito",
-                puntuacion: hits,
-                nivel: level,
-                recomendacion: rec
-            })
-        });
+        // Aquí irá la función del Excel en el siguiente paso
+        console.log("Datos listos para enviar: Nivel " + level);
     }
 </script>
 </body>
 </html>
+
 
 
