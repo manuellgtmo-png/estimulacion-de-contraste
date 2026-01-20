@@ -3,95 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estimulación Visual Pro - Centro Perceptum</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <title>Alto Contraste - Centro Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        * { box-sizing: border-box; }
         body { margin: 0; background: #000; color: #fff; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
 
-        /* PANTALLA INICIAL */
+        /* PANTALLA INICIAL: ALEGRE PERO SOBRIA */
         #start-screen {
             position: fixed; inset: 0; z-index: 100;
-            background: linear-gradient(135deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%);
+            background: linear-gradient(135deg, #475569 0%, #6366f1 50%, #4338ca 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 20px;
+            padding: 20px; text-align: center;
         }
-        .welcome-box {
-            background: white; color: #333; padding: 40px; border-radius: 50px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2); max-width: 550px;
+        .welcome-card {
+            background: white; color: #1e293b; padding: 40px; border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-width: 600px; border: 4px solid rgba(255,255,255,0.3);
         }
-        .btn-play {
-            background: #4CAF50; color: white; border: none; padding: 20px 50px;
-            font-size: 1.8rem; font-weight: 900; border-radius: 50px; cursor: pointer;
-            margin-top: 20px;
+        .skills-box {
+            text-align: left; background: #f8fafc; border-left: 5px solid #6366f1;
+            padding: 20px; margin: 20px 0; border-radius: 10px;
         }
+        .btn-start {
+            background: #6366f1; color: white; border: none; padding: 20px 50px;
+            font-size: 1.6rem; font-weight: 900; border-radius: 15px; cursor: pointer;
+            text-transform: uppercase; transition: background 0.3s;
+        }
+        .btn-start:hover { background: #4338ca; }
 
-        /* JUEGO */
+        /* JUEGO: B/N PURO */
         #game-area { display: none; width: 100vw; height: 100vh; position: relative; background: #000; }
-        
-        /* Fondo táctil para detectar errores */
         #miss-detector { position: absolute; inset: 0; z-index: 1; }
-
+        
         #target { 
             position: absolute; cursor: pointer; color: #fff;
             display: flex; align-items: center; justify-content: center;
-            z-index: 5; line-height: 1;
+            z-index: 5; user-select: none;
         }
 
-        /* BOTÓN SIGUIENTE */
-        #next-btn {
-            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
-            background: #fff; color: #000; border: none; padding: 25px 50px;
-            font-size: 1.6rem; font-weight: 900; border-radius: 60px;
-            cursor: pointer; display: none; z-index: 10; box-shadow: 0 0 30px rgba(255,255,255,0.4);
-        }
-
-        /* INFO SUPERIOR */
-        .ui-top {
+        /* UI SUPERIOR */
+        .ui-header {
             position: fixed; top: 0; width: 100%; padding: 20px;
             display: flex; justify-content: space-between; align-items: center;
             z-index: 10; pointer-events: none;
         }
-        #lives-display { font-size: 2rem; pointer-events: auto; }
-        .lvl-tag { background: rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 20px; font-weight: 900; }
+        .lives-container { 
+            background: rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 15px;
+            font-size: 1.8rem; letter-spacing: 3px; pointer-events: auto; 
+            display: flex; gap: 5px; min-width: 140px; justify-content: center;
+        }
+        .lvl-tag { font-weight: 900; font-size: 1.2rem; background: #fff; color: #000; padding: 8px 15px; border-radius: 10px; }
 
-        /* PANTALLA FINAL */
-        #end-screen {
-            position: fixed; inset: 0; background: #fff; color: #000; z-index: 110;
-            display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px;
+        /* BOTONES */
+        #next-btn {
+            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
+            background: #fff; color: #000; border: none; padding: 25px 50px;
+            font-size: 1.4rem; font-weight: 900; border-radius: 15px;
+            cursor: pointer; display: none; z-index: 20; box-shadow: 0 0 20px rgba(255,255,255,0.3);
         }
     </style>
 </head>
 <body>
 
 <div id="start-screen">
-    <div class="welcome-box">
-        <h1 style="font-size: 3rem; margin: 0;">¡Hola! ✨</h1>
-        <p style="font-size: 1.4rem;">Toca las figuras blancas. ¡Ten cuidado de no tocar el fondo!</p>
-        <button class="btn-play" onclick="startGame()">¡EMPEZAR! 🚀</button>
+    <div class="welcome-card">
+        <h1 style="margin: 0; color: #1e293b; font-size: 2.2rem;">Centro Perceptum</h1>
+        <p style="color: #64748b; font-weight: 700;">ESTIMULACIÓN DE ALTO CONTRASTE</p>
+        
+        <div class="skills-box">
+            <p style="margin-top:0;"><strong>🎯 Habilidades:</strong> Fijación, Agudeza visual básica y Atención focalizada.</p>
+            <p style="margin-bottom:0;"><strong>💡 Instrucción:</strong> Toca las figuras blancas. El tamaño disminuirá para trabajar la precisión. Si tocas el fondo negro, perderás una vida.</p>
+        </div>
+        
+        <p style="font-size: 0.9rem; color: #94a3b8;">Modo: Infinito (3 vidas) • Sin tiempo</p>
+        <button class="btn-start" onclick="startGame()">¡Comenzar Sesión!</button>
     </div>
 </div>
 
 <div id="game-area">
     <div id="miss-detector" onclick="onMiss()"></div>
-    <div class="ui-top">
+    <div class="ui-header">
         <div class="lvl-tag">NIVEL <span id="lvl-num">1</span></div>
-        <div id="lives-display">❤️❤️❤️</div>
+        <div id="lives-display" class="lives-container">❤️❤️❤️</div>
     </div>
     <div id="target" onclick="onHit(event)"></div>
     <button id="next-btn" onclick="nextLevel()">SIGUIENTE RETO ➔</button>
 </div>
 
-<div id="end-screen">
-    <h1 style="font-size: 3rem;">Juego Terminado</h1>
-    <p id="final-stats" style="font-size: 1.5rem;"></p>
-    <button class="btn-play" onclick="location.reload()" style="background:#2196F3">VOLVER A EMPEZAR</button>
-</div>
-
 <script>
     let level = 1;
     let lives = 3;
-    let baseSize = 400;
-    const shapes = ['★', '●', '■', '▲', '♥', '✖', '✦'];
+    let baseSize = 400; 
+    const shapes = ['★', '●', '■', '▲', '♥', '✦'];
 
     function startGame() {
         document.getElementById('start-screen').style.display = 'none';
@@ -104,45 +107,39 @@
         const nextBtn = document.getElementById('next-btn');
         nextBtn.style.display = 'none';
         
-        let currentSize = Math.max(50, baseSize - (level * 30));
+        let currentSize = Math.max(50, baseSize - (level * 35));
         target.style.width = currentSize + 'px';
         target.style.height = currentSize + 'px';
-        target.style.fontSize = (currentSize * 0.85) + 'px';
+        target.style.fontSize = (currentSize * 0.9) + 'px';
         target.innerHTML = shapes[Math.floor(Math.random() * shapes.length)];
 
         const maxX = window.innerWidth - currentSize;
         const maxY = window.innerHeight - currentSize - 180;
         target.style.left = Math.random() * maxX + 'px';
-        target.style.top = (Math.random() * maxY + 100) + 'px';
+        target.style.top = (Math.random() * maxY + 120) + 'px';
         target.style.display = 'flex';
     }
 
     function onHit(event) {
-        event.stopPropagation(); // Evita que el toque llegue al fondo (miss-detector)
+        event.stopPropagation();
         document.getElementById('target').style.display = 'none';
         document.getElementById('next-btn').style.display = 'block';
         
-        // Vida extra cada 5 niveles (máximo 3)
         if (level % 5 === 0 && lives < 3) {
             lives++;
-            updateLivesUI();
+            updateUI();
         }
     }
 
     function onMiss() {
         lives--;
-        updateLivesUI();
-        
-        // Efecto visual de error (flash rojo rápido)
-        document.body.style.backgroundColor = "#400";
-        setTimeout(() => { document.body.style.backgroundColor = "#000"; }, 100);
-
-        if (lives <= 0) {
-            endGame();
-        }
+        updateUI();
+        document.body.style.backgroundColor = "#2d0000";
+        setTimeout(() => { document.body.style.backgroundColor = "#000"; }, 150);
+        if (lives <= 0) location.reload(); // Reinicio rápido por ahora
     }
 
-    function updateLivesUI() {
+    function updateUI() {
         document.getElementById('lives-display').innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
     }
 
@@ -151,18 +148,10 @@
         document.getElementById('lvl-num').innerText = level;
         spawn();
     }
-
-    function endGame() {
-        document.getElementById('game-area').style.display = 'none';
-        document.getElementById('end-screen').style.display = 'flex';
-        document.getElementById('final-stats').innerText = `Llegaste al Nivel ${level}`;
-        
-        // Aquí irá la función del Excel en el siguiente paso
-        console.log("Datos listos para enviar: Nivel " + level);
-    }
 </script>
 </body>
 </html>
+
 
 
 
