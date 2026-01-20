@@ -9,113 +9,101 @@
         * { box-sizing: border-box; }
         body { margin: 0; background: #000; color: #fff; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
 
-        /* PANTALLA INICIAL AZUL SOBRIA */
-        #start-screen {
-            position: fixed; inset: 0; z-index: 100;
-            background: linear-gradient(135deg, #475569 0%, #6366f1 50%, #4338ca 100%);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+        /* UI SUPERIOR */
+        .ui-header {
+            position: fixed; top: 0; width: 100%; padding: 15px 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 10; background: rgba(0,0,0,0.6);
         }
-        .welcome-card {
-            background: white; color: #1e293b; padding: 40px; border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-width: 600px; text-align: center;
-        }
-        .skills-box {
-            text-align: left; background: #f1f5f9; border-left: 6px solid #6366f1;
-            padding: 20px; margin: 20px 0; border-radius: 10px; font-size: 0.95rem;
-        }
-        .btn-start {
-            background: #6366f1; color: white; border: none; padding: 22px 60px;
-            font-size: 1.6rem; font-weight: 900; border-radius: 20px; cursor: pointer; text-transform: uppercase;
-        }
+        .stats-group { display: flex; gap: 15px; align-items: center; }
+        .timer-box { font-weight: 700; font-size: 1.2rem; background: #fff; color: #000; padding: 5px 15px; border-radius: 8px; }
+        .lvl-tag { font-weight: 900; background: #6366f1; color: #fff; padding: 5px 15px; border-radius: 8px; }
+        .lives-container { font-size: 1.5rem; }
 
         /* JUEGO */
-        #game-area { display: none; width: 100vw; height: 100vh; position: relative; background: #000; }
+        #game-area { display: none; width: 100vw; height: 100vh; position: relative; }
         #miss-detector { position: absolute; inset: 0; z-index: 1; }
         
         #target { 
             position: absolute; cursor: pointer; color: #fff;
             display: flex; align-items: center; justify-content: center;
             z-index: 5; user-select: none;
-            filter: brightness(0) invert(1); /* Siluetas Blancas */
+            filter: brightness(0) invert(1); /* Efecto silueta blanca */
         }
 
-        /* UI */
-        .ui-header {
-            position: fixed; top: 0; width: 100%; padding: 25px;
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 10; pointer-events: none;
+        /* PANTALLAS */
+        #start-screen, #end-screen {
+            position: fixed; inset: 0; z-index: 100;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
         }
-        .lives-container { 
-            background: rgba(255,255,255,0.15); padding: 12px 20px; border-radius: 20px;
-            font-size: 2rem; display: flex; gap: 8px; pointer-events: auto;
-            min-width: 160px; justify-content: center; border: 1px solid rgba(255,255,255,0.2);
+        #start-screen { background: linear-gradient(135deg, #1e293b, #4338ca); padding: 20px; }
+        #end-screen { background: #fff; color: #000; display: none; padding: 20px; }
+        
+        .btn-main {
+            background: #6366f1; color: white; border: none; padding: 20px 50px;
+            font-size: 1.5rem; font-weight: 900; border-radius: 15px; cursor: pointer; text-transform: uppercase;
         }
-        .lvl-tag { font-weight: 900; font-size: 1.3rem; background: #fff; color: #000; padding: 10px 20px; border-radius: 12px; }
 
         #next-btn {
-            position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
-            background: #fff; color: #000; border: none; padding: 25px 60px;
-            font-size: 1.5rem; font-weight: 900; border-radius: 20px;
-            cursor: pointer; display: none; z-index: 20;
-        }
-
-        /* PANTALLA FINAL */
-        #end-screen {
-            position: fixed; inset: 0; background: #fff; color: #000; z-index: 110;
-            display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px;
+            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
+            background: #fff; color: #000; border: none; padding: 20px 40px;
+            font-size: 1.5rem; font-weight: 900; border-radius: 15px;
+            cursor: pointer; display: none; z-index: 20; box-shadow: 0 0 30px rgba(255,255,255,0.5);
         }
     </style>
 </head>
 <body>
 
 <div id="start-screen">
-    <div class="welcome-card">
-        <h1 style="margin: 0; color: #1e293b; font-size: 2.2rem;">Centro Perceptum</h1>
-        <p style="color: #64748b; font-weight: 700;">ESTIMULACIÓN DE ALTO CONTRASTE</p>
-        <div class="skills-box">
-            <p><strong>🎯 Habilidades:</strong> Fijación, Agudeza visual y Asociación de siluetas.</p>
-            <p><strong>💡 Instrucción:</strong> Toca las siluetas blancas. Los primeros 10 niveles el estímulo es grande para facilitar la fijación.</p>
-        </div>
-        <button class="btn-start" onclick="startGame()">¡Comenzar Sesión!</button>
-    </div>
+    <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Centro Perceptum</h1>
+    <p style="font-size: 1.2rem; margin-bottom: 30px;">ESTIMULACIÓN DE ALTO CONTRASTE</p>
+    <button class="btn-main" onclick="startGame()">¡EMPEZAR!</button>
 </div>
 
 <div id="game-area">
     <div id="miss-detector" onclick="onMiss()"></div>
     <div class="ui-header">
-        <div class="lvl-tag">NIVEL <span id="lvl-num">1</span></div>
+        <div class="stats-group">
+            <div class="lvl-tag">NIVEL <span id="lvl-num">1</span></div>
+            <div class="timer-box">⏱️ <span id="timer-val">0</span>s</div>
+        </div>
         <div id="lives-display" class="lives-container">❤️❤️❤️</div>
     </div>
     <div id="target" onclick="onHit(event)"></div>
-    <button id="next-btn" onclick="nextLevel()">SIGUIENTE RETO ➔</button>
+    <button id="next-btn" onclick="nextLevel()">SIGUIENTE NIVEL ➔</button>
 </div>
 
 <div id="end-screen">
-    <h1 style="font-size: 3rem; margin:0;">Sesión Terminada</h1>
-    <p id="final-stats" style="font-size: 1.5rem; color: #444; margin: 20px 0;"></p>
-    <button class="btn-start" onclick="location.reload()" style="background:#1e293b">Nueva Sesión</button>
+    <h1 style="font-size: 3rem; margin: 0;">Sesión Terminada</h1>
+    <p id="final-stats" style="font-size: 1.5rem; margin: 20px 0;"></p>
+    <button class="btn-main" onclick="location.reload()" style="background: #1e293b;">VOLVER AL INICIO</button>
 </div>
 
 <script>
-    // CONFIGURACIÓN DE TU GOOGLE FORM (Basado en tus links)
+    // IDs EXACTOS DE TU FORMULARIO
     const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
-    
-    // IDs extraídos de tu link de prellenado
     const ENTRY_PACIENTE = "entry.369874016";
     const ENTRY_JUEGO = "entry.1353470174";
     const ENTRY_NIVEL = "entry.721051298";
     const ENTRY_ACIERTOS = "entry.873272199";
     const ENTRY_FALLOS = "entry.1030094511";
     const ENTRY_TIEMPO = "entry.1303309812";
+    const ENTRY_FECHA = "entry.845098414";
 
     let level = 1;
     let lives = 3;
-    let baseSize = 400; 
-    const shapes = ['★', '●', '■', '▲', '♥', '🌙', '🍎', '🍐', '🏠', '🚗', '🐱', '🍦', '🦋', '🐘', '☀️'];
+    let seconds = 0;
+    let timerInterval;
+    let canMiss = false;
+    const shapes = ['🍎', '🏠', '🚗', '🐱', '🍦', '★', '▲', '🐘', '☀️', '🦋', '🌙'];
 
     function startGame() {
         document.getElementById('start-screen').style.display = 'none';
         document.getElementById('game-area').style.display = 'block';
+        timerInterval = setInterval(() => {
+            seconds++;
+            document.getElementById('timer-val').innerText = seconds;
+        }, 1000);
         spawn();
     }
 
@@ -123,40 +111,42 @@
         const target = document.getElementById('target');
         document.getElementById('next-btn').style.display = 'none';
         
-        let currentSize = baseSize;
-        if (level > 10) {
-            currentSize = Math.max(60, baseSize - ((level - 10) * 35));
-        }
+        let size = 400;
+        if (level > 10) size = Math.max(60, 400 - ((level - 10) * 35));
         
-        target.style.width = currentSize + 'px';
-        target.style.height = currentSize + 'px';
-        target.style.fontSize = (currentSize * 0.8) + 'px';
+        target.style.width = size + 'px';
+        target.style.height = size + 'px';
+        target.style.fontSize = (size * 0.8) + 'px';
         target.innerHTML = shapes[Math.floor(Math.random() * shapes.length)];
 
-        const maxX = window.innerWidth - currentSize;
-        const maxY = window.innerHeight - currentSize - 200;
+        const maxX = window.innerWidth - size;
+        const maxY = window.innerHeight - size - 150;
         target.style.left = Math.random() * maxX + 'px';
         target.style.top = (Math.random() * maxY + 120) + 'px';
+        
         target.style.display = 'flex';
+        setTimeout(() => { canMiss = true; }, 100); // Pequeño retraso para evitar clics accidentales
     }
 
     function onHit(event) {
         event.stopPropagation();
+        canMiss = false; // Bloquea el detector de fallos
         document.getElementById('target').style.display = 'none';
         document.getElementById('next-btn').style.display = 'block';
-        if (level % 5 === 0 && lives < 3) { lives++; updateUI(); }
     }
 
     function onMiss() {
+        if (!canMiss) return; 
+        
         lives--;
         updateUI();
-        document.body.style.backgroundColor = "#2d0000";
-        setTimeout(() => { document.body.style.backgroundColor = "#000"; }, 100);
+        document.body.style.backgroundColor = "#440000";
+        setTimeout(() => document.body.style.backgroundColor = "#000", 100);
         if (lives <= 0) endGame();
     }
 
     function updateUI() {
-        document.getElementById('lives-display').innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+        document.getElementById('lives-display').innerText = "❤️".repeat(lives) + "🖤".repeat(3-lives);
     }
 
     function nextLevel() {
@@ -166,27 +156,25 @@
     }
 
     function endGame() {
+        clearInterval(timerInterval);
+        canMiss = false;
         document.getElementById('game-area').style.display = 'none';
         document.getElementById('end-screen').style.display = 'flex';
-        document.getElementById('final-stats').innerText = `Nivel alcanzado: ${level}`;
+        document.getElementById('final-stats').innerText = `Nivel Alcanzado: ${level} | Tiempo: ${seconds}s`;
 
-        const nombrePaciente = localStorage.getItem('paciente') || "Paciente Pediátrico";
+        const nombre = localStorage.getItem('paciente') || "Paciente";
+        const fechaHoy = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+        
+        const dat = new URLSearchParams();
+        dat.append(ENTRY_PACIENTE, nombre);
+        dat.append(ENTRY_JUEGO, "Alto Contraste Pediátrico");
+        dat.append(ENTRY_NIVEL, level);
+        dat.append(ENTRY_ACIERTOS, level);
+        dat.append(ENTRY_FALLOS, "3");
+        dat.append(ENTRY_TIEMPO, seconds);
+        dat.append(ENTRY_FECHA, fechaHoy);
 
-        // ENVÍO MEDIANTE FORMULARIO (Mismo método que tus otros juegos)
-        const formData = new URLSearchParams();
-        formData.append(ENTRY_PACIENTE, nombrePaciente);
-        formData.append(ENTRY_JUEGO, "Alto Contraste Pediátrico");
-        formData.append(ENTRY_NIVEL, level);
-        formData.append(ENTRY_ACIERTOS, level);
-        formData.append(ENTRY_FALLOS, "3");
-        formData.append(ENTRY_TIEMPO, "N/A");
-
-        fetch(FORM_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: formData
-        }).then(() => console.log("Datos enviados al formulario"))
-          .catch(err => console.error("Error:", err));
+        fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: dat });
     }
 </script>
 </body>
