@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alto Contraste - Centro Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; background: #000; color: #fff; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
+        
+        /* Pantalla de Inicio */
+        #start-screen {
+            position: fixed; inset: 0; background: #1e293b; z-index: 100;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center;
+        }
+        .header-box { background: #38bdf8; color: #000; padding: 20px 40px; border-radius: 30px; margin-bottom: 20px; }
+        .instructions { background: #0f172a; padding: 30px; border-radius: 30px; max-width: 500px; border: 2px solid #38bdf8; }
+        .btn-play { background: #10b981; color: white; border: none; padding: 20px 50px; border-radius: 20px; font-weight: 900; font-size: 1.5rem; cursor: pointer; margin-top: 30px; box-shadow: 0 8px 0 #065f46; transition: 0.2s; }
+        .btn-play:active { transform: translateY(4px); box-shadow: 0 2px 0 #065f46; }
+
+        /* Área de Juego */
+        #game-container { position: relative; width: 100vw; height: 100vh; display: none; }
+        #target { position: absolute; cursor: pointer; transition: transform 0.2s; user-select: none; }
+        
+        /* UI de Juego */
+        #ui-overlay { position: fixed; top: 20px; left: 20px; z-index: 50; pointer-events: none; }
+        .stat-badge { background: rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 15px; font-size: 1rem; border: 1px solid #38bdf8; margin-bottom: 10px; }
+
+        /* Botón de Nivel */
+        #next-level-btn { 
+            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
+            background: #facc15; color: #000; border: none; padding: 20px 40px; 
+            border-radius: 50px; font-weight: 900; font-size: 1.2rem; cursor: pointer;
+            display: none; box-shadow: 0 8px 0 #ca8a04; z-index: 60;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce { 0%, 100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.1); } }
+
+        /* Pantalla Final */
+        #end-screen { 
+            position: fixed; inset: 0; background: #0f172a; z-index: 200; 
+            display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+        }
+        .recommendation { background: #38bdf8; color: #000; padding: 25px; border-radius: 25px; margin: 20px; font-weight: 700; max-width: 600px; }
+    </style>
+</head>
+<body>
+
+<div id="start-screen">
+    <div class="header-box"><h1>CENTRO PERCEPTUM</h1></div>
+    <div class="instructions">
+        <h2 style="color:#38bdf8">ALTO CONTRASTE PEDIÁTRICO</h2>
+        <p><b>Habilidades:</b> Fijación central, Agudeza visual básica y Atención focalizada.</p>
+        <p><b>Instrucción:</b> Toca las figuras blancas que aparecen. A medida que avanzas, ¡se volverán más pequeñas y desafiantes!</p>
+    </div>
+    <button class="btn-play" onclick="startGame()">¡EMPEZAR!</button>
+</div>
+
+<div id="game-container">
+    <div id="ui-overlay">
+        <div class="stat-badge">Nivel: <span id="lvl-txt">1</span></div>
+        <div class="stat-badge">Capturas: <span id="hits-txt">0</span></div>
+    </div>
+    <div id="target" onclick="hitTarget()"></div>
+    <button id="next-level-btn" onclick="nextLevel()">¡SIGUIENTE NIVEL! 🌟</button>
+</div>
+
+<div id="end-screen">
+    <h1 style="font-size: 3rem; color: #facc15;">¡EXCELENTE TRABAJO!</h1>
+    <div class="recommendation" id="recommendation-msg"></div>
+    <button class="btn-play" onclick="window.location.reload()">REPETIR</button>
+</div>
+
+<script>
+    let hits = 0;
+    let level = 1;
+    let targetSize = 250;
+    let startTime;
+    const icons = ['🍎', '🐶', '🐱', '🍌', '🚗', '⭐️', '🍐', '🐵', '🚀', '🐘', '🦋', '🎈'];
+    const WEBAPP_URL = "TU_URL_DE_GOOGLE_SHEETS_AQUI";
+
+    function startGame() {
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('game-container').style.display = 'block';
+        startTime = new Date();
+        spawnTarget();
+    }
+
+    function spawnTarget() {
+        const target = document.getElementById('target');
+        const img = icons[Math.floor(Math.random() * icons.length)];
+        
+        target.innerHTML = `<span style="font-size: ${targetSize}px">${img}</span>`;
+        
+        const maxX = window.innerWidth - targetSize;
+        const maxY = window.innerHeight - targetSize;
+        
+        target.style.left = Math.random() * maxX + 'px';
+        target.style.top = Math.random() * maxY + 'px';
+        
+        // Efecto visual de entrada
+        target.style.transform = "scale(0)";
+        setTimeout(() => target.style.transform = "scale(1)", 50);
+    }
+
+    function hitTarget() {
+        hits++;
+        document.getElementById('hits-txt').innerText = hits;
+        
+        if (hits % 5 === 0) {
+            document.getElementById('next-level-btn').style.display = 'block';
+            document.getElementById('target').style.pointerEvents = 'none';
+        } else {
+            spawnTarget();
+        }
+    }
+
+    function nextLevel() {
+        level++;
+        targetSize = Math.max(80, targetSize - 30); // Se achica cada nivel
+        document.getElementById('lvl-txt').innerText = level;
+        document.getElementById('next-level-btn').style.display = 'none';
+        document.getElementById('target').style.pointerEvents = 'auto';
+        
+        if (level > 10) finishGame();
+        else spawnTarget();
+    }
+
+    function finishGame() {
+        document.getElementById('game-container').style.display = 'none';
+        document.getElementById('end-screen').style.display = 'flex';
+        
+        let msg = "";
+        if (level >= 8) msg = "Nivel avanzado alcanzado. Se observa una excelente agudeza y fijación sostenida. Se recomienda pasar a seguimientos dinámicos.";
+        else if (level >= 4) msg = "Buen progreso. El paciente logra discriminar figuras medianas. Continuar entrenamiento para mejorar precisión en tamaños pequeños.";
+        else msg = "Sesión completada. Se sugiere trabajar en sesiones cortas para fortalecer la fijación central antes de aumentar la velocidad.";
+        
+        document.getElementById('recommendation-msg').innerText = msg;
+        sendToExcel(msg);
+    }
+
+    function sendToExcel(recomendacion) {
+        const paciente = localStorage.getItem('paciente') || 'Anonimo';
+        const data = {
+            paciente: paciente,
+            juego: "Alto Contraste Pediátrico",
+            puntuacion: hits,
+            nivel: level,
+            recomendacion: recomendacion
+        };
+
+        fetch(WEBAPP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+    }
+</script>
+</body>
+</html>
