@@ -9,7 +9,7 @@
         * { box-sizing: border-box; }
         body { margin: 0; background: #000; color: #fff; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
 
-        /* PANTALLA INICIAL: ALEGRE Y PROFESIONAL */
+        /* PANTALLA INICIAL AZUL SOBRIA */
         #start-screen {
             position: fixed; inset: 0; z-index: 100;
             background: linear-gradient(135deg, #475569 0%, #6366f1 50%, #4338ca 100%);
@@ -25,21 +25,22 @@
         }
         .btn-start {
             background: #6366f1; color: white; border: none; padding: 22px 60px;
-            font-size: 1.6rem; font-weight: 900; border-radius: 20px; cursor: pointer;
-            text-transform: uppercase; transition: 0.3s;
+            font-size: 1.6rem; font-weight: 900; border-radius: 20px; cursor: pointer; text-transform: uppercase;
         }
 
-        /* JUEGO: B/N PURO PARA TERAPIA */
+        /* ÁREA DE JUEGO */
         #game-area { display: none; width: 100vw; height: 100vh; position: relative; background: #000; }
         #miss-detector { position: absolute; inset: 0; z-index: 1; }
         
         #target { 
             position: absolute; cursor: pointer; color: #fff;
             display: flex; align-items: center; justify-content: center;
-            z-index: 5; user-select: none; transition: transform 0.1s;
+            z-index: 5; user-select: none;
+            /* FILTRO PARA SILUETAS BLANCAS PURAS */
+            filter: brightness(0) invert(1); 
         }
 
-        /* UI SUPERIOR CORREGIDA */
+        /* UI SUPERIOR */
         .ui-header {
             position: fixed; top: 0; width: 100%; padding: 25px;
             display: flex; justify-content: space-between; align-items: center;
@@ -52,12 +53,17 @@
         }
         .lvl-tag { font-weight: 900; font-size: 1.3rem; background: #fff; color: #000; padding: 10px 20px; border-radius: 12px; }
 
-        /* BOTONES DE CONTROL */
         #next-btn {
             position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
             background: #fff; color: #000; border: none; padding: 25px 60px;
             font-size: 1.5rem; font-weight: 900; border-radius: 20px;
-            cursor: pointer; display: none; z-index: 20; box-shadow: 0 0 40px rgba(255,255,255,0.4);
+            cursor: pointer; display: none; z-index: 20;
+        }
+
+        /* PANTALLA FINAL */
+        #end-screen {
+            position: fixed; inset: 0; background: #fff; color: #000; z-index: 110;
+            display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px;
         }
     </style>
 </head>
@@ -66,13 +72,11 @@
 <div id="start-screen">
     <div class="welcome-card">
         <h1 style="margin: 0; color: #1e293b; font-size: 2.2rem;">Centro Perceptum</h1>
-        <p style="color: #64748b; font-weight: 700; letter-spacing: 1px;">ALTO CONTRASTE PEDIÁTRICO</p>
-        
+        <p style="color: #64748b; font-weight: 700;">ESTIMULACIÓN DE ALTO CONTRASTE</p>
         <div class="skills-box">
-            <p><strong>🎯 Habilidades:</strong> Fijación central, Agudeza visual básica y Atención focalizada.</p>
-            <p style="margin-bottom:0;"><strong>💡 Instrucción:</strong> Toca las figuras blancas que aparecen. El tamaño se mantendrá grande los primeros niveles para asegurar la fijación.</p>
+            <p><strong>🎯 Habilidades:</strong> Fijación, Agudeza visual y Asociación de siluetas.</p>
+            <p><strong>💡 Instrucción:</strong> Toca las siluetas blancas. Los primeros 10 niveles el tamaño es grande para asegurar la fijación.</p>
         </div>
-        
         <button class="btn-start" onclick="startGame()">¡Comenzar Sesión!</button>
     </div>
 </div>
@@ -87,12 +91,20 @@
     <button id="next-btn" onclick="nextLevel()">SIGUIENTE RETO ➔</button>
 </div>
 
+<div id="end-screen">
+    <h1 style="font-size: 3rem; margin:0;">Sesión Terminada</h1>
+    <p id="final-stats" style="font-size: 1.5rem; color: #444; margin: 20px 0;"></p>
+    <button class="btn-start" onclick="location.reload()" style="background:#1e293b">Nueva Sesión</button>
+</div>
+
 <script>
+    // TU URL DE GOOGLE SHEETS ACTUALIZADA
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbWFU-3XbO1uNzUVRYmZSfL8YLozubn3b5r0pc231m1kaX7kDde6oYdeV54OA11D1bHMg/exec";
+    
     let level = 1;
     let lives = 3;
     let baseSize = 400; 
-    // Figuras aptas para niños (blancas sobre negro se verán geniales)
-    const shapes = ['★', '●', '■', '▲', '♥', '🌙', '🍎', '🍐', '🏠', '🚗'];
+    const shapes = ['★', '●', '■', '▲', '♥', '🌙', '🍎', '🍐', '🏠', '🚗', '🐱', '🍦', '🦋', '🐘', '☀️'];
 
     function startGame() {
         document.getElementById('start-screen').style.display = 'none';
@@ -102,21 +114,19 @@
 
     function spawn() {
         const target = document.getElementById('target');
-        const nextBtn = document.getElementById('next-btn');
-        nextBtn.style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
         
-        // LÓGICA DE TAMAÑO: Fijo hasta el nivel 10, luego disminuye
+        // Mantiene tamaño grande hasta nivel 10
         let currentSize = baseSize;
         if (level > 10) {
-            currentSize = Math.max(60, baseSize - ((level - 10) * 30));
+            currentSize = Math.max(60, baseSize - ((level - 10) * 35));
         }
         
         target.style.width = currentSize + 'px';
         target.style.height = currentSize + 'px';
-        target.style.fontSize = (currentSize * 0.85) + 'px';
+        target.style.fontSize = (currentSize * 0.8) + 'px';
         target.innerHTML = shapes[Math.floor(Math.random() * shapes.length)];
 
-        // Posición aleatoria evitando que se pegue a los bordes o a la UI
         const maxX = window.innerWidth - currentSize;
         const maxY = window.innerHeight - currentSize - 200;
         target.style.left = Math.random() * maxX + 'px';
@@ -128,26 +138,15 @@
         event.stopPropagation();
         document.getElementById('target').style.display = 'none';
         document.getElementById('next-btn').style.display = 'block';
-        
-        // Regalo de vida cada 5 niveles
-        if (level % 5 === 0 && lives < 3) {
-            lives++;
-            updateUI();
-        }
+        if (level % 5 === 0 && lives < 3) { lives++; updateUI(); }
     }
 
     function onMiss() {
         lives--;
         updateUI();
-        
-        // Feedback visual de error sutil
-        document.body.style.backgroundColor = "#330000";
+        document.body.style.backgroundColor = "#2d0000";
         setTimeout(() => { document.body.style.backgroundColor = "#000"; }, 100);
-
-        if (lives <= 0) {
-            alert("Sesión finalizada. Has llegado al Nivel " + level);
-            location.reload();
-        }
+        if (lives <= 0) endGame();
     }
 
     function updateUI() {
@@ -159,9 +158,40 @@
         document.getElementById('lvl-num').innerText = level;
         spawn();
     }
+
+    function getRecomendacion(lvl) {
+        if (lvl <= 5) return "Se observa baja fijación. Reforzar seguimiento visual.";
+        if (lvl <= 10) return "Fijación central lograda. Continuar estimulación de agudeza.";
+        if (lvl <= 15) return "Buena respuesta visual. Inicia trabajo de discriminación fina.";
+        return "Excelente desempeño en alto contraste y asociación de formas.";
+    }
+
+    function endGame() {
+        document.getElementById('game-area').style.display = 'none';
+        document.getElementById('end-screen').style.display = 'flex';
+        document.getElementById('final-stats').innerText = `Nivel alcanzado: ${level}`;
+
+        const nombrePaciente = localStorage.getItem('paciente') || "Paciente Pediátrico";
+
+        // ENVÍO AL EXCEL (Ordenado según tus columnas A-H)
+        fetch(WEBAPP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify({
+                paciente: nombrePaciente,
+                juego: "Alto Contraste Siluetas",
+                nivel: level,
+                puntuacion: level, // Columna Aciertos
+                fallos: 3, 
+                tiempo: "N/A",
+                recomendacion: getRecomendacion(level) // Columna H
+            })
+        });
+    }
 </script>
 </body>
 </html>
+
 
 
 
