@@ -9,55 +9,75 @@
         * { box-sizing: border-box; }
         body { margin: 0; background: #000; color: #fff; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
 
-        /* UI SUPERIOR */
-        .ui-header {
-            position: fixed; top: 0; width: 100%; padding: 15px 25px;
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 10; background: rgba(0,0,0,0.6);
+        /* PANTALLA INICIAL AZUL PROFESIONAL */
+        #start-screen {
+            position: fixed; inset: 0; z-index: 100;
+            background: linear-gradient(135deg, #1e293b 0%, #4338ca 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
         }
-        .stats-group { display: flex; gap: 15px; align-items: center; }
-        .timer-box { font-weight: 700; font-size: 1.2rem; background: #fff; color: #000; padding: 5px 15px; border-radius: 8px; }
-        .lvl-tag { font-weight: 900; background: #6366f1; color: #fff; padding: 5px 15px; border-radius: 8px; }
-        .lives-container { font-size: 1.5rem; }
+        .welcome-card {
+            background: white; color: #1e293b; padding: 40px; border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4); max-width: 550px; text-align: center;
+        }
+        .skills-box {
+            text-align: left; background: #f1f5f9; border-left: 6px solid #6366f1;
+            padding: 20px; margin: 25px 0; border-radius: 10px; font-size: 0.95rem; line-height: 1.5;
+        }
+        .btn-start {
+            background: #6366f1; color: white; border: none; padding: 22px 60px;
+            font-size: 1.5rem; font-weight: 900; border-radius: 20px; cursor: pointer; text-transform: uppercase;
+            transition: transform 0.2s;
+        }
+        .btn-start:active { transform: scale(0.95); }
 
-        /* JUEGO */
+        /* INTERFAZ DE JUEGO */
         #game-area { display: none; width: 100vw; height: 100vh; position: relative; }
         #miss-detector { position: absolute; inset: 0; z-index: 1; }
-        
         #target { 
             position: absolute; cursor: pointer; color: #fff;
             display: flex; align-items: center; justify-content: center;
-            z-index: 5; user-select: none;
-            filter: brightness(0) invert(1); /* Efecto silueta blanca */
+            z-index: 5; user-select: none; filter: brightness(0) invert(1);
         }
 
-        /* PANTALLAS */
-        #start-screen, #end-screen {
-            position: fixed; inset: 0; z-index: 100;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+        /* HEADER */
+        .ui-header {
+            position: fixed; top: 0; width: 100%; padding: 15px 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 10; background: rgba(0,0,0,0.4);
         }
-        #start-screen { background: linear-gradient(135deg, #1e293b, #4338ca); padding: 20px; }
-        #end-screen { background: #fff; color: #000; display: none; padding: 20px; }
-        
-        .btn-main {
-            background: #6366f1; color: white; border: none; padding: 20px 50px;
-            font-size: 1.5rem; font-weight: 900; border-radius: 15px; cursor: pointer; text-transform: uppercase;
-        }
+        .stats-group { display: flex; gap: 15px; align-items: center; }
+        .timer-box { font-weight: 700; font-size: 1.1rem; background: #fff; color: #000; padding: 5px 15px; border-radius: 8px; }
+        .lvl-tag { font-weight: 900; background: #6366f1; color: #fff; padding: 5px 15px; border-radius: 8px; }
+        .lives-container { font-size: 1.6rem; }
 
         #next-btn {
-            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
-            background: #fff; color: #000; border: none; padding: 20px 40px;
-            font-size: 1.5rem; font-weight: 900; border-radius: 15px;
-            cursor: pointer; display: none; z-index: 20; box-shadow: 0 0 30px rgba(255,255,255,0.5);
+            position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
+            background: #fff; color: #000; border: none; padding: 25px 50px;
+            font-size: 1.6rem; font-weight: 900; border-radius: 20px;
+            cursor: pointer; display: none; z-index: 20; box-shadow: 0 0 30px rgba(255,255,255,0.4);
+        }
+
+        /* PANTALLA FINAL */
+        #end-screen {
+            position: fixed; inset: 0; background: #fff; color: #000; z-index: 110;
+            display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px;
         }
     </style>
 </head>
 <body>
 
+<audio id="clap-sound" src="https://www.soundjay.com/human/sounds/applause-01.mp3" preload="auto"></audio>
+
 <div id="start-screen">
-    <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Centro Perceptum</h1>
-    <p style="font-size: 1.2rem; margin-bottom: 30px;">ESTIMULACIÓN DE ALTO CONTRASTE</p>
-    <button class="btn-main" onclick="startGame()">¡EMPEZAR!</button>
+    <div class="welcome-card">
+        <h1 style="margin: 0; color: #1e293b; font-size: 2rem;">Centro Perceptum</h1>
+        <p style="color: #6366f1; font-weight: 800; letter-spacing: 1px; margin-top: 5px;">ESTIMULACIÓN DE ALTO CONTRASTE</p>
+        <div class="skills-box">
+            <p><strong>🎯 Habilidades:</strong> Fijación visual, agudeza visual y asociación de siluetas.</p>
+            <p><strong>💡 Instrucción:</strong> Toca la silueta blanca. ¡Escucha los aplausos al acertar!</p>
+        </div>
+        <button class="btn-start" onclick="startGame()">¡Comenzar!</button>
+    </div>
 </div>
 
 <div id="game-area">
@@ -70,17 +90,16 @@
         <div id="lives-display" class="lives-container">❤️❤️❤️</div>
     </div>
     <div id="target" onclick="onHit(event)"></div>
-    <button id="next-btn" onclick="nextLevel()">SIGUIENTE NIVEL ➔</button>
+    <button id="next-btn" onclick="nextLevel()">SIGUIENTE RETO ➔</button>
 </div>
 
 <div id="end-screen">
-    <h1 style="font-size: 3rem; margin: 0;">Sesión Terminada</h1>
-    <p id="final-stats" style="font-size: 1.5rem; margin: 20px 0;"></p>
-    <button class="btn-main" onclick="location.reload()" style="background: #1e293b;">VOLVER AL INICIO</button>
+    <h1 style="font-size: 2.5rem; margin: 0;">Sesión Finalizada</h1>
+    <p id="final-stats" style="font-size: 1.4rem; color: #444; margin: 25px 0;"></p>
+    <button class="btn-start" onclick="location.reload()" style="background: #1e293b;">Nueva Sesión</button>
 </div>
 
 <script>
-    // IDs EXACTOS DE TU FORMULARIO
     const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
     const ENTRY_PACIENTE = "entry.369874016";
     const ENTRY_JUEGO = "entry.1353470174";
@@ -110,37 +129,38 @@
     function spawn() {
         const target = document.getElementById('target');
         document.getElementById('next-btn').style.display = 'none';
-        
         let size = 400;
         if (level > 10) size = Math.max(60, 400 - ((level - 10) * 35));
-        
         target.style.width = size + 'px';
         target.style.height = size + 'px';
         target.style.fontSize = (size * 0.8) + 'px';
         target.innerHTML = shapes[Math.floor(Math.random() * shapes.length)];
-
         const maxX = window.innerWidth - size;
         const maxY = window.innerHeight - size - 150;
         target.style.left = Math.random() * maxX + 'px';
         target.style.top = (Math.random() * maxY + 120) + 'px';
-        
         target.style.display = 'flex';
-        setTimeout(() => { canMiss = true; }, 100); // Pequeño retraso para evitar clics accidentales
+        setTimeout(() => { canMiss = true; }, 100);
     }
 
     function onHit(event) {
         event.stopPropagation();
-        canMiss = false; // Bloquea el detector de fallos
+        canMiss = false;
+        
+        // REPRODUCIR APLAUSOS
+        const clap = document.getElementById('clap-sound');
+        clap.currentTime = 0;
+        clap.play();
+
         document.getElementById('target').style.display = 'none';
         document.getElementById('next-btn').style.display = 'block';
     }
 
     function onMiss() {
         if (!canMiss) return; 
-        
         lives--;
         updateUI();
-        document.body.style.backgroundColor = "#440000";
+        document.body.style.backgroundColor = "#400";
         setTimeout(() => document.body.style.backgroundColor = "#000", 100);
         if (lives <= 0) endGame();
     }
@@ -160,10 +180,10 @@
         canMiss = false;
         document.getElementById('game-area').style.display = 'none';
         document.getElementById('end-screen').style.display = 'flex';
-        document.getElementById('final-stats').innerText = `Nivel Alcanzado: ${level} | Tiempo: ${seconds}s`;
+        document.getElementById('final-stats').innerText = `Nivel: ${level} | Tiempo: ${seconds}s`;
 
         const nombre = localStorage.getItem('paciente') || "Paciente";
-        const fechaHoy = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+        const fechaHoy = new Date().toISOString().split('T')[0];
         
         const dat = new URLSearchParams();
         dat.append(ENTRY_PACIENTE, nombre);
@@ -179,6 +199,7 @@
 </script>
 </body>
 </html>
+
 
 
 
