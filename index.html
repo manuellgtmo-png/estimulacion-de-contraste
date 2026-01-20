@@ -28,7 +28,7 @@
             font-size: 1.6rem; font-weight: 900; border-radius: 20px; cursor: pointer; text-transform: uppercase;
         }
 
-        /* ÁREA DE JUEGO */
+        /* JUEGO */
         #game-area { display: none; width: 100vw; height: 100vh; position: relative; background: #000; }
         #miss-detector { position: absolute; inset: 0; z-index: 1; }
         
@@ -36,11 +36,10 @@
             position: absolute; cursor: pointer; color: #fff;
             display: flex; align-items: center; justify-content: center;
             z-index: 5; user-select: none;
-            /* FILTRO PARA SILUETAS BLANCAS PURAS */
-            filter: brightness(0) invert(1); 
+            filter: brightness(0) invert(1); /* Siluetas Blancas */
         }
 
-        /* UI SUPERIOR */
+        /* UI */
         .ui-header {
             position: fixed; top: 0; width: 100%; padding: 25px;
             display: flex; justify-content: space-between; align-items: center;
@@ -75,7 +74,7 @@
         <p style="color: #64748b; font-weight: 700;">ESTIMULACIÓN DE ALTO CONTRASTE</p>
         <div class="skills-box">
             <p><strong>🎯 Habilidades:</strong> Fijación, Agudeza visual y Asociación de siluetas.</p>
-            <p><strong>💡 Instrucción:</strong> Toca las siluetas blancas. Los primeros 10 niveles el tamaño es grande para asegurar la fijación.</p>
+            <p><strong>💡 Instrucción:</strong> Toca las siluetas blancas. Los primeros 10 niveles el estímulo es grande para facilitar la fijación.</p>
         </div>
         <button class="btn-start" onclick="startGame()">¡Comenzar Sesión!</button>
     </div>
@@ -98,9 +97,17 @@
 </div>
 
 <script>
-    // TU URL DE GOOGLE SHEETS ACTUALIZADA
-    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbWFU-3XbO1uNzUVRYmZSfL8YLozubn3b5r0pc231m1kaX7kDde6oYdeV54OA11D1bHMg/exec";
+    // CONFIGURACIÓN DE TU GOOGLE FORM (Basado en tus links)
+    const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
     
+    // IDs extraídos de tu link de prellenado
+    const ENTRY_PACIENTE = "entry.369874016";
+    const ENTRY_JUEGO = "entry.1353470174";
+    const ENTRY_NIVEL = "entry.721051298";
+    const ENTRY_ACIERTOS = "entry.873272199";
+    const ENTRY_FALLOS = "entry.1030094511";
+    const ENTRY_TIEMPO = "entry.1303309812";
+
     let level = 1;
     let lives = 3;
     let baseSize = 400; 
@@ -116,7 +123,6 @@
         const target = document.getElementById('target');
         document.getElementById('next-btn').style.display = 'none';
         
-        // Mantiene tamaño grande hasta nivel 10
         let currentSize = baseSize;
         if (level > 10) {
             currentSize = Math.max(60, baseSize - ((level - 10) * 35));
@@ -159,13 +165,6 @@
         spawn();
     }
 
-    function getRecomendacion(lvl) {
-        if (lvl <= 5) return "Se observa baja fijación. Reforzar seguimiento visual.";
-        if (lvl <= 10) return "Fijación central lograda. Continuar estimulación de agudeza.";
-        if (lvl <= 15) return "Buena respuesta visual. Inicia trabajo de discriminación fina.";
-        return "Excelente desempeño en alto contraste y asociación de formas.";
-    }
-
     function endGame() {
         document.getElementById('game-area').style.display = 'none';
         document.getElementById('end-screen').style.display = 'flex';
@@ -173,24 +172,26 @@
 
         const nombrePaciente = localStorage.getItem('paciente') || "Paciente Pediátrico";
 
-        // ENVÍO AL EXCEL (Ordenado según tus columnas A-H)
-        fetch(WEBAPP_URL, {
+        // ENVÍO MEDIANTE FORMULARIO (Mismo método que tus otros juegos)
+        const formData = new URLSearchParams();
+        formData.append(ENTRY_PACIENTE, nombrePaciente);
+        formData.append(ENTRY_JUEGO, "Alto Contraste Pediátrico");
+        formData.append(ENTRY_NIVEL, level);
+        formData.append(ENTRY_ACIERTOS, level);
+        formData.append(ENTRY_FALLOS, "3");
+        formData.append(ENTRY_TIEMPO, "N/A");
+
+        fetch(FORM_URL, {
             method: 'POST',
             mode: 'no-cors',
-            body: JSON.stringify({
-                paciente: nombrePaciente,
-                juego: "Alto Contraste Siluetas",
-                nivel: level,
-                puntuacion: level, // Columna Aciertos
-                fallos: 3, 
-                tiempo: "N/A",
-                recomendacion: getRecomendacion(level) // Columna H
-            })
-        });
+            body: formData
+        }).then(() => console.log("Datos enviados al formulario"))
+          .catch(err => console.error("Error:", err));
     }
 </script>
 </body>
 </html>
+
 
 
 
