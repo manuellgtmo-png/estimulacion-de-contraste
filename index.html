@@ -2,12 +2,16 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Alto Contraste Pediátrico - Centro Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; }
-        body { margin: 0; background: #000; color: #fff; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: #000; color: #fff; font-family: 'Montserrat', sans-serif; 
+            overflow: hidden; touch-action: none; display: flex; flex-direction: column;
+        }
 
         /* PANTALLA INICIAL AZUL PROFESIONAL */
         #start-screen {
@@ -16,51 +20,59 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
         }
         .welcome-card {
-            background: white; color: #1e293b; padding: 40px; border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4); max-width: 550px; text-align: center;
+            background: white; color: #1e293b; padding: 30px; border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4); width: 95%; max-width: 500px; text-align: center;
         }
         .skills-box {
             text-align: left; background: #f1f5f9; border-left: 6px solid #6366f1;
-            padding: 20px; margin: 25px 0; border-radius: 10px; font-size: 0.95rem; line-height: 1.5;
+            padding: 15px; margin: 20px 0; border-radius: 10px; font-size: 0.9rem; line-height: 1.5;
         }
         .btn-start {
-            background: #6366f1; color: white; border: none; padding: 22px 60px;
-            font-size: 1.5rem; font-weight: 900; border-radius: 20px; cursor: pointer; text-transform: uppercase;
-            transition: transform 0.2s;
+            background: #6366f1; color: white; border: none; padding: 20px 40px;
+            font-size: 1.3rem; font-weight: 900; border-radius: 20px; cursor: pointer; text-transform: uppercase;
+            box-shadow: 0 6px 0 #3730a3; transition: transform 0.1s;
         }
-        .btn-start:active { transform: scale(0.95); }
+        .btn-start:active { transform: translateY(4px); box-shadow: 0 2px 0 #3730a3; }
 
         /* INTERFAZ DE JUEGO */
-        #game-area { display: none; width: 100vw; height: 100vh; position: relative; }
+        #game-area { 
+            display: none; flex-grow: 1; position: relative; width: 100%; overflow: hidden;
+        }
         #miss-detector { position: absolute; inset: 0; z-index: 1; }
+        
         #target { 
             position: absolute; cursor: pointer; color: #fff;
             display: flex; align-items: center; justify-content: center;
             z-index: 5; user-select: none; filter: brightness(0) invert(1);
+            will-change: transform, top, left;
         }
 
         /* HEADER */
         .ui-header {
-            position: fixed; top: 0; width: 100%; padding: 15px 25px;
+            width: 100%; height: 70px; padding: 0 20px;
             display: flex; justify-content: space-between; align-items: center;
-            z-index: 10; background: rgba(0,0,0,0.4);
+            background: rgba(30, 41, 59, 0.8); border-bottom: 2px solid #334155;
+            z-index: 20;
         }
-        .stats-group { display: flex; gap: 15px; align-items: center; }
-        .timer-box { font-weight: 700; font-size: 1.1rem; background: #fff; color: #000; padding: 5px 15px; border-radius: 8px; }
-        .lvl-tag { font-weight: 900; background: #6366f1; color: #fff; padding: 5px 15px; border-radius: 8px; }
-        .lives-container { font-size: 1.6rem; }
+        .stats-group { display: flex; gap: 10px; align-items: center; }
+        .timer-box { font-weight: 700; font-size: 0.9rem; background: #fff; color: #000; padding: 4px 12px; border-radius: 8px; }
+        .lvl-tag { font-weight: 900; background: #6366f1; color: #fff; padding: 4px 12px; border-radius: 8px; font-size: 0.9rem; }
+        .lives-container { font-size: 1.3rem; letter-spacing: 2px; }
 
         #next-btn {
-            position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
+            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
             background: #fff; color: #000; border: none; padding: 25px 50px;
-            font-size: 1.6rem; font-weight: 900; border-radius: 20px;
-            cursor: pointer; display: none; z-index: 20; box-shadow: 0 0 30px rgba(255,255,255,0.4);
+            font-size: 1.4rem; font-weight: 900; border-radius: 25px;
+            cursor: pointer; display: none; z-index: 30; 
+            box-shadow: 0 0 40px rgba(255,255,255,0.5);
+            text-transform: uppercase;
         }
 
         /* PANTALLA FINAL */
         #end-screen {
             position: fixed; inset: 0; background: #fff; color: #000; z-index: 110;
-            display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px;
+            display: none; flex-direction: column; align-items: center; justify-content: center; 
+            text-align: center; padding: 30px;
         }
     </style>
 </head>
@@ -70,7 +82,7 @@
 
 <div id="start-screen">
     <div class="welcome-card">
-        <h1 style="margin: 0; color: #1e293b; font-size: 2rem;">Centro Perceptum</h1>
+        <h1 style="margin: 0; color: #1e293b; font-size: 1.8rem;">Centro Perceptum</h1>
         <p style="color: #6366f1; font-weight: 800; letter-spacing: 1px; margin-top: 5px;">ESTIMULACIÓN DE ALTO CONTRASTE</p>
         <div class="skills-box">
             <p><strong>🎯 Habilidades:</strong> Fijación visual, agudeza visual y asociación de siluetas.</p>
@@ -94,8 +106,9 @@
 </div>
 
 <div id="end-screen">
-    <h1 style="font-size: 2.5rem; margin: 0;">Sesión Finalizada</h1>
-    <p id="final-stats" style="font-size: 1.4rem; color: #444; margin: 25px 0;"></p>
+    <h1 style="font-size: 2.2rem; margin: 0;">Sesión Finalizada</h1>
+    <p id="final-stats" style="font-size: 1.3rem; color: #444; margin: 25px 0;"></p>
+    <div id="status-envio" style="margin-bottom: 20px; font-weight: bold; color: #6366f1;">Enviando resultados...</div>
     <button class="btn-start" onclick="location.reload()" style="background: #1e293b;">Nueva Sesión</button>
 </div>
 
@@ -118,7 +131,7 @@
 
     function startGame() {
         document.getElementById('start-screen').style.display = 'none';
-        document.getElementById('game-area').style.display = 'block';
+        document.getElementById('game-area').style.display = 'flex';
         timerInterval = setInterval(() => {
             seconds++;
             document.getElementById('timer-val').innerText = seconds;
@@ -128,18 +141,30 @@
 
     function spawn() {
         const target = document.getElementById('target');
+        const area = document.getElementById('game-area');
         document.getElementById('next-btn').style.display = 'none';
+        
+        // LÓGICA DE TAMAÑO ORIGINAL
         let size = 400;
         if (level > 10) size = Math.max(60, 400 - ((level - 10) * 35));
+        
         target.style.width = size + 'px';
         target.style.height = size + 'px';
         target.style.fontSize = (size * 0.8) + 'px';
         target.innerHTML = shapes[Math.floor(Math.random() * shapes.length)];
-        const maxX = window.innerWidth - size;
-        const maxY = window.innerHeight - size - 150;
-        target.style.left = Math.random() * maxX + 'px';
-        target.style.top = (Math.random() * maxY + 120) + 'px';
+        
+        // Cálculo de posición segura para evitar el Header
+        const headerHeight = 70;
+        const maxX = area.clientWidth - size;
+        const maxY = area.clientHeight - size - headerHeight;
+
+        const x = Math.random() * maxX;
+        const y = (Math.random() * maxY) + headerHeight;
+
+        target.style.left = x + 'px';
+        target.style.top = y + 'px';
         target.style.display = 'flex';
+        
         setTimeout(() => { canMiss = true; }, 100);
     }
 
@@ -147,10 +172,9 @@
         event.stopPropagation();
         canMiss = false;
         
-        // REPRODUCIR APLAUSOS
         const clap = document.getElementById('clap-sound');
         clap.currentTime = 0;
-        clap.play();
+        clap.play().catch(e => console.log("Audio play blocked"));
 
         document.getElementById('target').style.display = 'none';
         document.getElementById('next-btn').style.display = 'block';
@@ -180,7 +204,7 @@
         canMiss = false;
         document.getElementById('game-area').style.display = 'none';
         document.getElementById('end-screen').style.display = 'flex';
-        document.getElementById('final-stats').innerText = `Nivel: ${level} | Tiempo: ${seconds}s`;
+        document.getElementById('final-stats').innerText = `Nivel Alcanzado: ${level} | Tiempo: ${seconds}s`;
 
         const nombre = localStorage.getItem('paciente') || "Paciente";
         const fechaHoy = new Date().toISOString().split('T')[0];
@@ -191,14 +215,23 @@
         dat.append(ENTRY_NIVEL, level);
         dat.append(ENTRY_ACIERTOS, level);
         dat.append(ENTRY_FALLOS, "3");
-        dat.append(ENTRY_TIEMPO, seconds);
+        dat.append(ENTRY_TIEMPO, seconds + "s");
         dat.append(ENTRY_FECHA, fechaHoy);
 
-        fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: dat });
+        fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: dat })
+        .then(() => {
+            document.getElementById('status-envio').innerText = "✅ DATOS SINCRONIZADOS";
+            document.getElementById('status-envio').style.color = "green";
+        })
+        .catch(() => {
+            document.getElementById('status-envio').innerText = "⚠️ ERROR DE CONEXIÓN";
+            document.getElementById('status-envio').style.color = "red";
+        });
     }
 </script>
 </body>
 </html>
+
 
 
 
